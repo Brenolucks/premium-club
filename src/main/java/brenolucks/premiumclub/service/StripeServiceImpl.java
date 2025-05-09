@@ -27,7 +27,7 @@ public class StripeServiceImpl implements StripeService {
                     SessionCreateParams.builder()
                             .setCustomerEmail(email)
                             .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                            .setSuccessUrl("http://localhost:8080/checkout-session")
+                            .setSuccessUrl("http://localhost:8080/api/checkout-ok")
                             .addLineItem(
                                     SessionCreateParams.LineItem.builder()
                                             .setPrice(priceID)

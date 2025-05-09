@@ -5,6 +5,7 @@ import brenolucks.premiumclub.service.StripeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +20,15 @@ public class SubscriptionController {
 
     @PostMapping("/api/subscription")
     public ResponseEntity<Map<String, String>> createSubscription(@RequestBody SubscriptionRequest subscriptionRequest) {
-        System.out.println(subscriptionRequest.planType());
         String priceID = stripeService.getPriceByPlanType(subscriptionRequest.planType().toString());
-        System.out.println(priceID);
+
         String checkoutURL = stripeService.createSubscription(subscriptionRequest.email(), priceID);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("checkout_url", checkoutURL));
     }
 
+    @GetMapping("/api/checkout-ok")
+    public ResponseEntity<String> checkoutOk() {
+        return ResponseEntity.status(HttpStatus.OK).body("PAYMENT SUCCESS ENJOY IT!");
+    }
 }
