@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 public class StripeWebhookController {
     @Value("${stripe.webhook.secret}")
@@ -22,7 +24,7 @@ public class StripeWebhookController {
     @PostMapping("/api/webhook")
     public String handleWebhook(
             @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) {
+            @RequestHeader("Stripe-Signature") String sigHeader) throws IOException {
 
         Event event;
 
