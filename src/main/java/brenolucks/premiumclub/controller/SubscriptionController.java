@@ -2,6 +2,7 @@ package brenolucks.premiumclub.controller;
 
 import brenolucks.premiumclub.dto.SubscriptionRequest;
 import brenolucks.premiumclub.service.StripeServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class SubscriptionController {
     StripeServiceImpl stripeService;
 
     @PostMapping("/api/subscription")
-    public ResponseEntity<Map<String, String>> createSubscription(@RequestBody SubscriptionRequest subscriptionRequest) {
+    public ResponseEntity<Map<String, String>> createSubscription(@RequestBody @Valid SubscriptionRequest subscriptionRequest) {
         String priceID = stripeService.getPriceByPlanType(subscriptionRequest.planType().toString());
 
         String checkoutURL = stripeService.createSubscription(subscriptionRequest.email(), priceID);
