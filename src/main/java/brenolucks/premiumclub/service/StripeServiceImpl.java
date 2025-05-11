@@ -1,5 +1,7 @@
 package brenolucks.premiumclub.service;
 
+import brenolucks.premiumclub.exceptions.InvalidTypeException;
+import brenolucks.premiumclub.model.PlanType;
 import com.stripe.Stripe;
 import com.stripe.StripeClient;
 import com.stripe.exception.StripeException;
@@ -11,6 +13,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 @Service
@@ -43,15 +46,22 @@ public class StripeServiceImpl implements StripeService {
     }
 
     @Override
-    public String getPriceByPlanType(String planType) {
-        if (planType.equals("DAILY")) {
-            planType = "price_1RMZ6AERVgp1fq6wYCp6mCHP";
-        } else if (planType.equals("MONTHLY")) {
-            planType = "price_1RMZ6AERVgp1fq6whQYkZlCG";
-        } else {
-            planType = "price_1RMZ6AERVgp1fq6wDo7s61O3";
+    public String getPriceByPlanType(String type) {
+        PlanType planType = null;
+
+        try {
+            planType = PlanType.valueOf(type.toUpperCase());
+
+            return switch (planType) {
+                case DAILY -> "price_1RMZ6AERVgp1fq6wYCp6mCHP";
+                case MONTHLY -> "price_1RMZ6AERVgp1fq6whQYkZlCG";
+                case YEARLY -> "price_1RMZ6AERVgp1fq6wDo7s61O3";
+            };
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidTypeException(
+                    "Invalid plan type: '" + type  + "'. Valid options are: " +
+                            Arrays.toString(PlanType.values()));
         }
 
-        return planType;
     }
 }

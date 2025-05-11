@@ -21,7 +21,7 @@ public class SubscriptionController {
 
     @PostMapping("/api/subscription")
     public ResponseEntity<Map<String, String>> createSubscription(@RequestBody @Valid SubscriptionRequest subscriptionRequest) {
-        String priceID = stripeService.getPriceByPlanType(subscriptionRequest.planType().toString());
+        String priceID = stripeService.getPriceByPlanType(subscriptionRequest.planType());
 
         String checkoutURL = stripeService.createSubscription(subscriptionRequest.email(), priceID);
 

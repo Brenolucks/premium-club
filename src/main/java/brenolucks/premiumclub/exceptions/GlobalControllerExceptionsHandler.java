@@ -1,6 +1,8 @@
 package brenolucks.premiumclub.exceptions;
 
+import brenolucks.premiumclub.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +31,16 @@ public class GlobalControllerExceptionsHandler {
 
         response.put("errors", errors);
         return response;
+    }
+
+    @ExceptionHandler(InvalidTypeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPlanType(InvalidTypeException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                "planType"
+        );
+        return ResponseEntity.badRequest().body(error);
     }
 
     private Map<String, String> mapFieldError(FieldError fieldError) {
