@@ -1,5 +1,9 @@
 package brenolucks.premiumclub.service;
 
+import brenolucks.premiumclub.model.Status;
+import brenolucks.premiumclub.model.Subscription;
+import brenolucks.premiumclub.model.Users;
+import brenolucks.premiumclub.repository.UsersRepository;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -8,6 +12,7 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.stripe.model.Invoice;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +23,9 @@ public class StripeWebhookServiceImpl implements StripeWebhookService{
     @Value("${spring.sendgrid.api-key}")
     private String sendGridAPIKey;
 
+    @Autowired
+    UsersRepository usersRepository;
+
     @Override
     public String handleInvoicePaid(Invoice invoice) throws IOException {
         // Extract important details
@@ -25,6 +33,25 @@ public class StripeWebhookServiceImpl implements StripeWebhookService{
         String subscriptionId = invoice.getId();
         Long amountPaid = invoice.getAmountPaid(); // in cents
         boolean isFirstPayment = "subscription_create".equals(invoice.getBillingReason());
+
+        System.out.println("CustomerID: " + customerId);
+        System.out.println("SubscriptionID: " + subscriptionId);
+        System.out.println("Customer Name: " + invoice.getCustomerName());
+        System.out.println("Customer Email: " + invoice.getCustomerEmail());
+        System.out.println("First Payment: " + invoice.getBillingReason());
+
+        //check in DB if exist an user with this email invoice.getCustomerEmail()
+        //if not save in DB
+
+        boolean existUser = usersRepository.existsByEmail(invoice.getCustomerEmail());
+        if(!existUser) {
+            Users users = new Users();
+            users.setEmail(invoice.getCustomerEmail());
+            users.setName(invoice.getCustomerName());
+            users.setStatus(Status.ACTIVE);
+            usersRepository.save(users);
+        }
+
 
         // Business logic:
         if (isFirstPayment) {
@@ -34,6 +61,10 @@ public class StripeWebhookServiceImpl implements StripeWebhookService{
             if (sendGridAPIKey == null || sendGridAPIKey.isEmpty()) {
                 throw new RuntimeException("SendGrid API key is not configured");
             }
+
+            //check in DB if exist an user with this email invoice.getCustomerEmail()
+            //if not save in DB
+
             Email from = new Email("brenolucks@gmail.com");
             String subject = "Sending with Twilio SendGrid is Fun";
             Email to = new Email("janna.thresh@gmail.com");

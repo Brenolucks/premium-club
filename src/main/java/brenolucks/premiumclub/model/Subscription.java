@@ -27,5 +27,5 @@ public class Subscription {
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true, nullable = false)
     private Users usersID;
     @Column(name = "stripe_subscription_id")
-    private Long stripeSubscriptionID;
+    private String stripeSubscriptionID;
 }
