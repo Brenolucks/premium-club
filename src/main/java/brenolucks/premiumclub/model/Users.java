@@ -1,8 +1,7 @@
 package brenolucks.premiumclub.model;
 
+import brenolucks.premiumclub.model.enums.Status;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,4 +26,6 @@ public class Users {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+    @OneToOne(mappedBy = "usersID")
+    private Subscription subscription;
 }

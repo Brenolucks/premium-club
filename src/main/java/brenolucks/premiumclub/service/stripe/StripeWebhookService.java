@@ -1,6 +1,5 @@
-package brenolucks.premiumclub.service;
+package brenolucks.premiumclub.service.stripe;
 
-import com.stripe.model.Event;
 import com.stripe.model.Invoice;
 
 import java.io.IOException;

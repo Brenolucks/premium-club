@@ -1,5 +1,6 @@
 package brenolucks.premiumclub.model;
 
+import brenolucks.premiumclub.model.enums.PlanType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package brenolucks.premiumclub.repository;
+package brenolucks.premiumclub.repository.subscription;
 
 import brenolucks.premiumclub.model.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;

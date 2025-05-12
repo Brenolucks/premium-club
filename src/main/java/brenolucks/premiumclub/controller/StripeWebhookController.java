@@ -1,6 +1,7 @@
 package brenolucks.premiumclub.controller;
 
-import brenolucks.premiumclub.service.StripeWebhookServiceImpl;
+import brenolucks.premiumclub.service.stripe.StripeWebhookServiceImpl;
+import brenolucks.premiumclub.service.user.UserService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.Invoice;
@@ -20,6 +21,8 @@ public class StripeWebhookController {
     private String webhookSecret;
     @Autowired
     StripeWebhookServiceImpl stripeWebhookService;
+    @Autowired
+    UserService userService;
 
     @PostMapping("/api/webhook")
     public String handleWebhook(
@@ -29,14 +32,11 @@ public class StripeWebhookController {
         Event event;
 
         try {
-            // Verify the webhook signature
             event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
         } catch (SignatureVerificationException e) {
-            // Invalid signature
             return "Invalid signature";
         }
 
-        // Handle invoice.paid event
         if ("invoice.paid".equals(event.getType())) {
             Invoice invoice = (Invoice) event.getDataObjectDeserializer().getObject().get();
             return stripeWebhookService.handleInvoicePaid(invoice);

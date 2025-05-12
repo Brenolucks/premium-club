@@ -1,29 +1,36 @@
-package brenolucks.premiumclub.service;
+package brenolucks.premiumclub.service.stripe;
 
 import brenolucks.premiumclub.exceptions.InvalidTypeException;
-import brenolucks.premiumclub.model.PlanType;
-import com.stripe.Stripe;
+import brenolucks.premiumclub.model.enums.PlanType;
+import brenolucks.premiumclub.repository.user.UsersRepository;
+import brenolucks.premiumclub.service.user.UserService;
 import com.stripe.StripeClient;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Price;
-import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
-import com.stripe.param.SubscriptionCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 @Service
 public class StripeServiceImpl implements StripeService {
     @Autowired
     StripeClient stripeClient;
 
+    @Autowired
+    UsersRepository usersRepository;
+
+    @Autowired
+    UserService userService;
+
     @Override
-    public String createSubscription(String email, String priceID) {
-        //create a subscription and redirect to check out session
+    public String createSubscription(String email, String priceID, PlanType planType) {
+        boolean existsUser = usersRepository.existsByEmail(email);
+
+        if(existsUser) {
+            userService.existUserWithThisPlan(false, email, planType);
+        }
 
         try {
             SessionCreateParams params =
@@ -40,17 +47,17 @@ public class StripeServiceImpl implements StripeService {
                             .build();
             Session session = Session.create(params);
             return session.getUrl();
-        } catch (StripeException ex) {
+        } catch (StripeException | RuntimeException ex) {
             throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public String getPriceByPlanType(String type) {
+    public String getPriceByPlanType(PlanType type) {
         PlanType planType = null;
 
         try {
-            planType = PlanType.valueOf(type.toUpperCase());
+            planType = PlanType.valueOf(type.toString());
 
             return switch (planType) {
                 case DAILY -> "price_1RMZ6AERVgp1fq6wYCp6mCHP";
@@ -59,9 +66,8 @@ public class StripeServiceImpl implements StripeService {
             };
         } catch (IllegalArgumentException ex) {
             throw new InvalidTypeException(
-                    "Invalid plan type: '" + type  + "'. Valid options are: " +
+                    "Invalid plan type: '" + type + "'. Valid options are: " +
                             Arrays.toString(PlanType.values()));
         }
-
     }
 }

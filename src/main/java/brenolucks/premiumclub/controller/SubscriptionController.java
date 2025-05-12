@@ -1,7 +1,7 @@
 package brenolucks.premiumclub.controller;
 
 import brenolucks.premiumclub.dto.SubscriptionRequest;
-import brenolucks.premiumclub.service.StripeServiceImpl;
+import brenolucks.premiumclub.service.stripe.StripeServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 public class SubscriptionController {
@@ -23,9 +22,9 @@ public class SubscriptionController {
     public ResponseEntity<Map<String, String>> createSubscription(@RequestBody @Valid SubscriptionRequest subscriptionRequest) {
         String priceID = stripeService.getPriceByPlanType(subscriptionRequest.planType());
 
-        String checkoutURL = stripeService.createSubscription(subscriptionRequest.email(), priceID);
+        String checkoutURL = stripeService.createSubscription(subscriptionRequest.email(), priceID, subscriptionRequest.planType());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("checkout_url", checkoutURL));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("checkout_url", checkoutURL));
     }
 
     @GetMapping("/api/checkout-ok")

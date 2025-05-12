@@ -1,6 +1,6 @@
 package brenolucks.premiumclub.dto;
 
-import brenolucks.premiumclub.model.PlanType;
+import brenolucks.premiumclub.model.enums.PlanType;
 import jakarta.validation.constraints.*;
 
 public record SubscriptionRequest(
@@ -10,6 +10,5 @@ public record SubscriptionRequest(
         @NotNull(message = "This field cannot be null!")
         String email,
         @NotNull(message = "This field cannot be null!")
-        @NotBlank(message = "This field cannot be empty!")
-        String planType) {
+        PlanType planType) {
 }

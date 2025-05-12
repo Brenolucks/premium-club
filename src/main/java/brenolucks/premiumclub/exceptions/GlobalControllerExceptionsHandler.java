@@ -33,6 +33,15 @@ public class GlobalControllerExceptionsHandler {
         return response;
     }
 
+    @ExceptionHandler(UserExistWithPlanException.class)
+    public ResponseEntity<ErrorResponse> handleUserExistWithPlan(UserExistWithPlanException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage()
+        );
+        return ResponseEntity.badRequest().body(error);
+    }
+
     @ExceptionHandler(InvalidTypeException.class)
     public ResponseEntity<ErrorResponse> handleInvalidPlanType(InvalidTypeException ex) {
         ErrorResponse error = new ErrorResponse(
